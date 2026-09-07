@@ -10,6 +10,14 @@ Prerequisite: Docker Desktop.
 docker compose up --build
 ```
 
+After the stack is running, execute the complete examiner journey with:
+
+```powershell
+& .\scripts\demo.ps1
+```
+
+The demo verifies authentication, Academic transcript generation, Finance invoicing, HR payroll, the RabbitMQ enrollment event, and the gateway rate limit.
+
 OpenAPI documentation is available at:
 
 - Gateway: http://localhost:8000/docs
