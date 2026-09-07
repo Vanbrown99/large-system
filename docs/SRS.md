@@ -16,7 +16,7 @@ The School ERP coordinates authentication, academic records, finance, and HR ope
 - Passwords must be bcrypt-hashed.
 - JWTs must expire and be signed with a secret stored outside source control.
 - Requests must enter through the gateway and be rate limited.
-- Database tables must be normalized, indexed, and restorable from backup.
+- MySQL database tables must be normalized, indexed, and restorable from backup.
 - Automated tests must run in CI on every push and pull request.
 
 ## Roles

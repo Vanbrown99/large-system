@@ -17,6 +17,14 @@ services:
       dockerfile: auth-service/Dockerfile
     expose:
       - "8001"
+    environment:
+      AUTH_DB_HOST: mysql
+      AUTH_DB_PORT: 3306
+      AUTH_DB_NAME: school_erp
+      AUTH_DB_USER: erp_user
+      AUTH_DB_PASSWORD: erp_password_change_me
+    depends_on:
+      - mysql
 
   academic-service:
     build:
@@ -39,14 +47,16 @@ services:
     expose:
       - "8004"
 
-  postgres:
-    image: postgres:16-alpine
+  mysql:
+    image: mysql:8.4
     environment:
-      POSTGRES_DB: school_erp
-      POSTGRES_USER: erp_user
-      POSTGRES_PASSWORD: erp_password_change_me
+      MYSQL_DATABASE: school_erp
+      MYSQL_USER: erp_user
+      MYSQL_PASSWORD: erp_password_change_me
+      MYSQL_ROOT_PASSWORD: root_password_change_me
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
 
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
@@ -56,5 +66,5 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
 
 volumes:
-  postgres-data:
+  mysql-data:
   rabbitmq-data:

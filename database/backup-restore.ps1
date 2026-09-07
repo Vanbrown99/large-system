@@ -5,9 +5,9 @@ param(
 )
 
 if ($Action -eq "backup") {
-    docker compose exec -T postgres pg_dump -U erp_user -Fc school_erp > $File
+    docker compose exec -T mysql mysqldump -u erp_user -perp_password_change_me school_erp > $File
     Write-Host "Backup written to $File"
 } else {
-    Get-Content -Raw $File | docker compose exec -T postgres pg_restore -U erp_user -d school_erp --clean --if-exists
+    Get-Content -Raw $File | docker compose exec -T mysql mysql -u erp_user -perp_password_change_me school_erp
     Write-Host "Database restored from $File"
 }

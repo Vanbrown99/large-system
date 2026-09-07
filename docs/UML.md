@@ -25,7 +25,7 @@ flowchart LR
   Gateway --> Academic
   Gateway --> Finance
   Gateway --> HR
-  Auth --> PostgreSQL
+  Auth --> MySQL
   Academic -. enrollment event .-> RabbitMQ
   RabbitMQ -. invoice consumer .-> Finance
 ```

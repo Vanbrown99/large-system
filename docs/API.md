@@ -16,3 +16,5 @@ All production requests enter through `http://localhost:8000`.
 | POST | `/api/v1/hr/payroll` | Calculate payroll deductions |
 
 Interactive OpenAPI documentation is generated at `/docs` by FastAPI.
+
+Authentication data is persisted in the MySQL `users` table when the Compose stack is running.

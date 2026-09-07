@@ -40,7 +40,8 @@ OpenAPI documentation is available at:
 - The gateway is the public entry point and applies a per-client rate limit.
 - Academic publishes durable `StudentEnrolled` events to RabbitMQ; Finance consumes them and creates invoices asynchronously.
 - `database/schema.sql` is normalized and includes indexes for common searches.
-- `database/backup-restore.ps1` demonstrates PostgreSQL backup and restore.
+- MySQL 8 initializes the normalized schema automatically; Auth registrations persist to the `users` table with bcrypt hashes.
+- `database/backup-restore.ps1` demonstrates MySQL backup and restore.
 - `.github/workflows/ci.yml` runs tests and validates Compose on every push and pull request.
 - `tests/` contains automated checks for authentication, Academic, Finance, HR, gateway health, and rate limiting; the current suite passes 8 tests.
 
