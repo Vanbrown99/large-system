@@ -1,0 +1,60 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth-service
+      - academic-service
+      - finance-service
+      - hr-service
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    expose:
+      - "8001"
+
+  academic-service:
+    build:
+      context: .
+      dockerfile: academic-service/Dockerfile
+    expose:
+      - "8002"
+
+  finance-service:
+    build:
+      context: .
+      dockerfile: finance-service/Dockerfile
+    expose:
+      - "8003"
+
+  hr-service:
+    build:
+      context: .
+      dockerfile: hr-service/Dockerfile
+    expose:
+      - "8004"
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: school_erp
+      POSTGRES_USER: erp_user
+      POSTGRES_PASSWORD: erp_password_change_me
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  postgres-data:
+  rabbitmq-data:
