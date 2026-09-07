@@ -23,12 +23,14 @@ OpenAPI documentation is available at:
 4. Call `POST /api/v1/finance/invoices` to generate an invoice.
 5. Call `POST /api/v1/hr/payroll` to calculate payroll deductions.
 6. Send 11 requests in one minute from one client to demonstrate the gateway's `429` response.
+7. Call `POST /api/v1/academic/enrollments` and then `GET /api/v1/finance/invoices/{student_id}` to demonstrate the RabbitMQ `StudentEnrolled` event creating an invoice asynchronously.
 
 ## Quality evidence
 
 - Passwords are bcrypt hashes; plaintext passwords are never stored.
 - JWTs carry the user subject, role, and expiration.
 - The gateway is the public entry point and applies a per-client rate limit.
+- Academic publishes durable `StudentEnrolled` events to RabbitMQ; Finance consumes them and creates invoices asynchronously.
 - `database/schema.sql` is normalized and includes indexes for common searches.
 - `database/backup-restore.ps1` demonstrates PostgreSQL backup and restore.
 - `.github/workflows/ci.yml` runs tests and validates Compose on every push and pull request.

@@ -10,7 +10,9 @@ All production requests enter through `http://localhost:8000`.
 | GET | `/api/v1/auth/me` | Inspect authenticated user |
 | GET | `/api/v1/auth/admin/overview` | Admin-only route |
 | POST | `/api/v1/academic/transcripts` | Generate weighted transcript |
+| POST | `/api/v1/academic/enrollments` | Publish a StudentEnrolled event |
 | POST | `/api/v1/finance/invoices` | Generate fee invoice |
+| GET | `/api/v1/finance/invoices/{student_id}` | List invoices created for a student |
 | POST | `/api/v1/hr/payroll` | Calculate payroll deductions |
 
 Interactive OpenAPI documentation is generated at `/docs` by FastAPI.
