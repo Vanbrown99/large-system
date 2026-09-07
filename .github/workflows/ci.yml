@@ -13,5 +13,5 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - run: PYTHONPATH=auth-service pytest tests -q
+      - run: PYTHONPATH=auth-service:academic-service:finance-service:hr-service:gateway pytest tests -q
       - run: docker compose config

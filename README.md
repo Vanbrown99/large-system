@@ -34,6 +34,7 @@ OpenAPI documentation is available at:
 - `database/schema.sql` is normalized and includes indexes for common searches.
 - `database/backup-restore.ps1` demonstrates PostgreSQL backup and restore.
 - `.github/workflows/ci.yml` runs tests and validates Compose on every push and pull request.
+- `tests/` contains automated checks for authentication, Academic, Finance, HR, gateway health, and rate limiting; the current suite passes 8 tests.
 
 ## Branch convention
 
