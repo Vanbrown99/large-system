@@ -16,6 +16,8 @@ After the stack is running, execute the complete examiner journey with:
 & .\scripts\demo.ps1
 ```
 
+Open the dashboard at http://localhost:8000 to run the same workflows in a browser. The API remains available under `/api/v1`, and Swagger documentation is at http://localhost:8000/docs.
+
 The demo verifies authentication, Academic transcript generation, Finance invoicing, HR payroll, the RabbitMQ enrollment event, and the gateway rate limit.
 
 OpenAPI documentation is available at:

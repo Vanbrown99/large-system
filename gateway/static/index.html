@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>School ERP Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">Campus<span>OS</span></a>
+    <div class="system-status"><i></i> Gateway online</div>
+  </header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">School ERP microservices</p>
+      <h1>Operations, without the terminal.</h1>
+      <p>Run the same live academic, finance, and HR workflows from one shared interface.</p>
+    </section>
+
+    <section class="status-strip" aria-label="System services">
+      <span><b id="gatewayStatus">...</b> Gateway</span>
+      <span><b>Auth</b> MySQL-backed</span>
+      <span><b>Academic</b> Transcript & enrollment</span>
+      <span><b>Finance</b> RabbitMQ consumer</span>
+      <span><b>HR</b> Payroll</span>
+    </section>
+
+    <section class="workspace">
+      <nav class="tabs" aria-label="ERP modules">
+        <button class="tab active" data-panel="auth">Identity</button>
+        <button class="tab" data-panel="academic">Academic</button>
+        <button class="tab" data-panel="finance">Finance</button>
+        <button class="tab" data-panel="hr">Payroll</button>
+      </nav>
+
+      <div class="panel active" id="auth">
+        <div class="panel-heading"><div><p class="eyebrow">Access</p><h2>Identity management</h2></div><p>Create an account, issue a JWT, and verify the signed-in user.</p></div>
+        <div class="forms two-up">
+          <form id="registerForm"><h3>Create user</h3><label>Full name<input name="name" required minlength="2" placeholder="Exam Demo Student"></label><label>Email<input name="email" required type="email" placeholder="student@example.com"></label><label>Password<input name="password" required type="password" minlength="8" placeholder="At least 8 characters"></label><label>Role<select name="role"><option value="student">Student</option><option value="admin">Admin</option></select></label><button type="submit">Register user</button></form>
+          <form id="loginForm"><h3>Sign in</h3><label>Email<input name="email" required type="email" placeholder="student@example.com"></label><label>Password<input name="password" required type="password" minlength="8" placeholder="Your password"></label><button type="submit">Get access token</button><button type="button" class="secondary" id="profileButton">Check current user</button></form>
+        </div>
+      </div>
+
+      <div class="panel" id="academic">
+        <div class="panel-heading"><div><p class="eyebrow">Records</p><h2>Academic services</h2></div><p>Generate a transcript or publish an enrollment event.</p></div>
+        <div class="forms two-up">
+          <form id="transcriptForm"><h3>Generate transcript</h3><label>Student ID<input name="student_id" required value="STU-001"></label><label>Student name<input name="student_name" required value="Exam Demo Student"></label><label>Mathematics score<input name="math_score" required type="number" min="0" max="100" value="78"></label><label>Computer Science score<input name="cs_score" required type="number" min="0" max="100" value="86"></label><button type="submit">Create transcript</button></form>
+          <form id="enrollmentForm"><h3>Enroll student</h3><label>Student ID<input name="student_id" required value="STU-001"></label><label>Tuition<input name="tuition" required type="number" min="0" value="1200"></label><label>Accommodation<input name="accommodation" type="number" min="0" value="300"></label><label>Other fees<input name="other_fees" type="number" min="0" value="100"></label><button type="submit">Publish enrollment</button></form>
+        </div>
+      </div>
+
+      <div class="panel" id="finance">
+        <div class="panel-heading"><div><p class="eyebrow">Billing</p><h2>Finance</h2></div><p>Create invoices directly or view those generated from enrollment events.</p></div>
+        <div class="forms two-up">
+          <form id="invoiceForm"><h3>Create invoice</h3><label>Student ID<input name="student_id" required value="STU-001"></label><label>Tuition<input name="tuition" required type="number" min="0" value="1200"></label><label>Accommodation<input name="accommodation" type="number" min="0" value="300"></label><label>Other fees<input name="other_fees" type="number" min="0" value="100"></label><button type="submit">Create invoice</button></form>
+          <form id="invoiceListForm"><h3>Find invoices</h3><label>Student ID<input name="student_id" required value="STU-001"></label><button type="submit">View student invoices</button></form>
+        </div>
+      </div>
+
+      <div class="panel" id="hr">
+        <div class="panel-heading"><div><p class="eyebrow">Compensation</p><h2>Payroll calculation</h2></div><p>Calculate gross pay, pension, tax, and net salary.</p></div>
+        <div class="forms one-up"><form id="payrollForm"><h3>Calculate payroll</h3><label>Employee ID<input name="employee_id" required value="EMP-001"></label><label>Gross salary<input name="gross_salary" required type="number" min="1" value="5000"></label><label>Pension rate<input name="pension_rate" required type="number" min="0" max="1" step="0.01" value="0.08"></label><label>Tax rate<input name="tax_rate" required type="number" min="0" max="1" step="0.01" value="0.10"></label><button type="submit">Calculate salary</button></form></div>
+      </div>
+    </section>
+    <section class="response"><div><p class="eyebrow">Live response</p><h2 id="responseTitle">Ready for a request</h2></div><pre id="output">Choose a module and submit a form to call the live gateway.</pre></section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

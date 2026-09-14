@@ -4,6 +4,7 @@ from collections import defaultdict, deque
 import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="School ERP API Gateway", version="1.0.0")
 RATE_LIMIT = 10
@@ -44,3 +45,6 @@ async def proxy(path: str, request: Request) -> Response:
         response = await client.request(request.method, target, params=request.query_params, content=body, headers=headers)
     response_headers = {key: value for key, value in response.headers.items() if key.lower() not in {"content-length", "transfer-encoding", "connection"}}
     return Response(response.content, status_code=response.status_code, headers=response_headers, media_type=response.headers.get("content-type"))
+
+
+app.mount("/", StaticFiles(directory="gateway/static", html=True), name="dashboard")
