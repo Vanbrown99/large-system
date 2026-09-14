@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 
+from .database import connection, enabled
+
 app = FastAPI(title="School ERP Academic Service", version="1.0.0")
 
 
@@ -45,6 +47,41 @@ def publish_enrollment(request: EnrollmentRequest) -> None:
         connection.close()
 
 
+def save_transcript(request: TranscriptRequest, average: float, credits: int, standing: str) -> None:
+    if not enabled():
+        return
+    db_connection = connection()
+    try:
+        cursor = db_connection.cursor()
+        cursor.execute(
+            "INSERT INTO academic_transcripts (student_id, student_name, average_score, credits, standing) VALUES (%s, %s, %s, %s, %s)",
+            (request.student_id, request.student_name, average, credits, standing),
+        )
+        transcript_id = cursor.lastrowid
+        cursor.executemany(
+            "INSERT INTO academic_transcript_grades (transcript_id, course_code, course_name, score, credit_units) VALUES (%s, %s, %s, %s, %s)",
+            [(transcript_id, grade.course_code, grade.course_name, grade.score, grade.credit_units) for grade in request.grades],
+        )
+        db_connection.commit()
+    finally:
+        db_connection.close()
+
+
+def save_enrollment(request: EnrollmentRequest) -> None:
+    if not enabled():
+        return
+    db_connection = connection()
+    try:
+        cursor = db_connection.cursor()
+        cursor.execute(
+            "INSERT INTO academic_enrollments (student_id, tuition, accommodation, other_fees) VALUES (%s, %s, %s, %s)",
+            (request.student_id, request.tuition, request.accommodation, request.other_fees),
+        )
+        db_connection.commit()
+    finally:
+        db_connection.close()
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "academic"}
@@ -55,12 +92,15 @@ def transcript(request: TranscriptRequest) -> dict:
     total_units = sum(grade.credit_units for grade in request.grades)
     weighted_score = sum(grade.score * grade.credit_units for grade in request.grades)
     average = round(weighted_score / total_units, 2) if total_units else 0
-    return {"student_id": request.student_id, "student_name": request.student_name, "average_score": average, "credits": total_units, "standing": "Pass" if average >= 50 else "At Risk", "grades": request.grades}
+    standing = "Pass" if average >= 50 else "At Risk"
+    save_transcript(request, average, total_units, standing)
+    return {"student_id": request.student_id, "student_name": request.student_name, "average_score": average, "credits": total_units, "standing": standing, "grades": request.grades}
 
 
 @app.post("/enrollments", status_code=status.HTTP_202_ACCEPTED)
 def enroll(request: EnrollmentRequest) -> dict[str, str]:
     try:
+        save_enrollment(request)
         publish_enrollment(request)
     except (pika.exceptions.AMQPError, OSError) as error:
         raise HTTPException(status_code=503, detail="Message broker unavailable") from error

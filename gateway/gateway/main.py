@@ -1,3 +1,4 @@
+import os
 import time
 from collections import defaultdict, deque
 
@@ -5,6 +6,7 @@ import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
+from jose import JWTError, jwt
 
 app = FastAPI(title="School ERP API Gateway", version="1.0.0")
 RATE_LIMIT = 10
@@ -16,6 +18,7 @@ ROUTES = {
     "/api/v1/finance": "http://finance-service:8003",
     "/api/v1/hr": "http://hr-service:8004",
 }
+PUBLIC_AUTH_PATHS = {"/api/v1/auth/register", "/api/v1/auth/login"}
 
 
 @app.get("/health")
@@ -38,6 +41,18 @@ async def proxy(path: str, request: Request) -> Response:
     upstream = next((url for prefix, url in ROUTES.items() if full_path.startswith(prefix)), None)
     if upstream is None:
         return JSONResponse({"detail": "Route not found"}, status_code=404)
+    if full_path not in PUBLIC_AUTH_PATHS:
+        authorization = request.headers.get("authorization", "")
+        if not authorization.startswith("Bearer "):
+            return JSONResponse({"detail": "Bearer token required"}, status_code=401)
+        try:
+            jwt.decode(
+                authorization.removeprefix("Bearer "),
+                os.getenv("JWT_SECRET", "change-this-in-development"),
+                algorithms=["HS256"],
+            )
+        except JWTError:
+            return JSONResponse({"detail": "Invalid or expired token"}, status_code=401)
     target = upstream + full_path[len(next(prefix for prefix in ROUTES if full_path.startswith(prefix))):]
     body = await request.body()
     headers = {key: value for key, value in request.headers.items() if key.lower() != "host"}

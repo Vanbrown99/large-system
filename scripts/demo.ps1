@@ -46,7 +46,7 @@ $login = Invoke-Json -Method Post -Path "/api/v1/auth/login" -Body @{
 }
 $headers = @{ Authorization = "Bearer $($login.access_token)" }
 $me = Invoke-Json -Method Get -Path "/api/v1/auth/me" -Headers $headers
-$transcript = Invoke-Json -Method Post -Path "/api/v1/academic/transcripts" -Body @{
+$transcript = Invoke-Json -Method Post -Path "/api/v1/academic/transcripts" -Headers $headers -Body @{
     student_id = $studentId
     student_name = "Demo Student"
     grades = @(
@@ -54,19 +54,19 @@ $transcript = Invoke-Json -Method Post -Path "/api/v1/academic/transcripts" -Bod
         @{ course_code = "SEN4122"; course_name = "Software Engineering"; score = 70; credit_units = 2 }
     )
 }
-$invoice = Invoke-Json -Method Post -Path "/api/v1/finance/invoices" -Body @{
+$invoice = Invoke-Json -Method Post -Path "/api/v1/finance/invoices" -Headers $headers -Body @{
     student_id = $studentId
     tuition = 1200
     accommodation = 300
     other_fees = 50
 }
-$payroll = Invoke-Json -Method Post -Path "/api/v1/hr/payroll" -Body @{
+$payroll = Invoke-Json -Method Post -Path "/api/v1/hr/payroll" -Headers $headers -Body @{
     employee_id = "EMP-DEMO-001"
     gross_salary = 5000
     pension_rate = 0.08
     tax_rate = 0.10
 }
-$enrollment = Invoke-Json -Method Post -Path "/api/v1/academic/enrollments" -Body @{
+$enrollment = Invoke-Json -Method Post -Path "/api/v1/academic/enrollments" -Headers $headers -Body @{
     student_id = $studentId
     tuition = 1200
     accommodation = 300
@@ -75,7 +75,7 @@ $enrollment = Invoke-Json -Method Post -Path "/api/v1/academic/enrollments" -Bod
 
 $eventInvoice = $null
 for ($attempt = 0; $attempt -lt 30; $attempt++) {
-    $eventInvoices = Invoke-Json -Method Get -Path "/api/v1/finance/invoices/$studentId"
+    $eventInvoices = Invoke-Json -Method Get -Path "/api/v1/finance/invoices/$studentId" -Headers $headers
     if ($eventInvoices.Count -gt 1) {
         $eventInvoice = $eventInvoices[-1]
         break

@@ -35,7 +35,7 @@ function attach(id, path, transform, title, authenticated = false) {
   });
 }
 
-attach('#registerForm', '/auth/register', values, 'User registered');
+attach('#registerForm', '/auth/register', (data) => data, 'User registered');
 document.querySelector('#loginForm').addEventListener('submit', async (event) => {
   event.preventDefault();
   try { const result = await request('/auth/login', 'POST', values(event.currentTarget)); token = result.access_token; show('Access token issued', { token_type: result.token_type, authenticated: true }); }
@@ -44,14 +44,14 @@ document.querySelector('#loginForm').addEventListener('submit', async (event) =>
 document.querySelector('#profileButton').addEventListener('click', async () => {
   try { show('Current user', await request('/auth/me', 'GET', null, true)); } catch (error) { show('Profile unavailable', { error: error.message }); }
 });
-attach('#transcriptForm', '/academic/transcripts', (data) => ({ student_id: data.student_id, student_name: data.student_name, grades: [{ course_code: 'MTH101', course_name: 'Mathematics', score: Number(data.math_score), credit_units: 3 }, { course_code: 'CSC101', course_name: 'Computer Science', score: Number(data.cs_score), credit_units: 3 }] }), 'Transcript generated');
-attach('#enrollmentForm', '/academic/enrollments', (data) => numeric(data, ['tuition', 'accommodation', 'other_fees']), 'Enrollment published');
-attach('#invoiceForm', '/finance/invoices', (data) => numeric(data, ['tuition', 'accommodation', 'other_fees']), 'Invoice created');
+attach('#transcriptForm', '/academic/transcripts', (data) => ({ student_id: data.student_id, student_name: data.student_name, grades: [{ course_code: 'MTH101', course_name: 'Mathematics', score: Number(data.math_score), credit_units: 3 }, { course_code: 'CSC101', course_name: 'Computer Science', score: Number(data.cs_score), credit_units: 3 }] }), 'Transcript generated', true);
+attach('#enrollmentForm', '/academic/enrollments', (data) => numeric(data, ['tuition', 'accommodation', 'other_fees']), 'Enrollment published', true);
+attach('#invoiceForm', '/finance/invoices', (data) => numeric(data, ['tuition', 'accommodation', 'other_fees']), 'Invoice created', true);
 document.querySelector('#invoiceListForm').addEventListener('submit', async (event) => {
   event.preventDefault();
-  try { const id = values(event.currentTarget).student_id; show('Student invoices', await request(`/finance/invoices/${encodeURIComponent(id)}`, 'GET')); } catch (error) { show('Invoice lookup failed', { error: error.message }); }
+  try { const id = values(event.currentTarget).student_id; show('Student invoices', await request(`/finance/invoices/${encodeURIComponent(id)}`, 'GET', null, true)); } catch (error) { show('Invoice lookup failed', { error: error.message }); }
 });
-attach('#payrollForm', '/hr/payroll', (data) => numeric(data, ['gross_salary', 'pension_rate', 'tax_rate']), 'Payroll calculated');
+attach('#payrollForm', '/hr/payroll', (data) => numeric(data, ['gross_salary', 'pension_rate', 'tax_rate']), 'Payroll calculated', true);
 document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => {
   document.querySelectorAll('.tab, .panel').forEach((item) => item.classList.remove('active'));
   tab.classList.add('active'); document.querySelector(`#${tab.dataset.panel}`).classList.add('active');

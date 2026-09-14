@@ -7,6 +7,8 @@ import pika
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
+from .database import connection, enabled
+
 app = FastAPI(title="School ERP Finance Service", version="1.0.0")
 invoices: list[dict] = []
 
@@ -27,7 +29,19 @@ def health() -> dict[str, str]:
 def create_invoice(request: InvoiceRequest) -> dict:
     total = round(request.tuition + request.accommodation + request.other_fees, 2)
     invoice = {"invoice_id": f"INV-{uuid4().hex[:8].upper()}", "student_id": request.student_id, "amount": total, "status": "unpaid"}
-    invoices.append(invoice)
+    if enabled():
+        db_connection = connection()
+        try:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                "INSERT INTO finance_invoices (student_id, amount, status) VALUES (%s, %s, %s)",
+                (invoice["student_id"], invoice["amount"], invoice["status"]),
+            )
+            db_connection.commit()
+        finally:
+            db_connection.close()
+    else:
+        invoices.append(invoice)
     return invoice
 
 
@@ -57,4 +71,12 @@ def start_consumer() -> None:
 
 @app.get("/invoices/{student_id}")
 def list_invoices(student_id: str) -> list[dict]:
+    if enabled():
+        db_connection = connection()
+        try:
+            cursor = db_connection.cursor(dictionary=True)
+            cursor.execute("SELECT id, student_id, amount, status FROM finance_invoices WHERE student_id = %s ORDER BY id", (student_id,))
+            return [{"invoice_id": f"INV-{row['id']:08d}", "student_id": row["student_id"], "amount": float(row["amount"]), "status": row["status"]} for row in cursor.fetchall()]
+        finally:
+            db_connection.close()
     return [invoice for invoice in invoices if invoice["student_id"] == student_id]

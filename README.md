@@ -10,6 +10,12 @@ Prerequisite: Docker Desktop.
 docker compose up --build
 ```
 
+For an existing MySQL Docker volume created before module persistence was added, run this one-time upgrade after the stack starts:
+
+```powershell
+Get-Content -Raw .\database\upgrade-002-module-persistence.sql | docker compose exec -T mysql mysql -u erp_user -perp_password_change_me school_erp
+```
+
 After the stack is running, execute the complete examiner journey with:
 
 ```powershell

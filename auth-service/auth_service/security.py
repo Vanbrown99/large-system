@@ -1,9 +1,10 @@
+import os
 from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-JWT_SECRET = "change-this-in-development"
+JWT_SECRET = os.getenv("JWT_SECRET", "change-this-in-development")
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_MINUTES = 60
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

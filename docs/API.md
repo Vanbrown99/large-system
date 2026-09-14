@@ -17,4 +17,6 @@ All production requests enter through `http://localhost:8000`.
 
 Interactive OpenAPI documentation is generated at `/docs` by FastAPI.
 
-Authentication data is persisted in the MySQL `users` table when the Compose stack is running.
+`/api/v1/auth/register` and `/api/v1/auth/login` are public. Every other `/api/v1` route requires `Authorization: Bearer <JWT>`; the gateway validates the token before forwarding the request.
+
+MySQL persists users, transcripts and grades, enrollment requests, finance invoices, and payroll results when the Compose stack is running.
